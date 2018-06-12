@@ -20,6 +20,7 @@ function parse(output = '') {
   const regex = /(;; )([^\s]+)( SECTION:)/g;
   const result = {};
   const data = output.split(/\r?\n/);
+  if (data.length === 1 && data[0] === '') return result;
   let section = 'header';
   data.forEach((line, i) => {
     let m;
@@ -42,10 +43,14 @@ function parse(output = '') {
       }
     }
   });
-  result.time = Number(data[data.length - 6].replace(';; Query time: ', '').replace(' msec', ''));
-  result.server = data[data.length - 5].replace(';; SERVER: ', '');
-  result.datetime = data[data.length - 4].replace(';; WHEN: ', '');
-  result.size = Number(data[data.length - 3].replace(';; MSG SIZE  rcvd: ', ''));
+  try {
+    result.time = Number(data[data.length - 6].replace(';; Query time: ', '').replace(' msec', ''));
+    result.server = data[data.length - 5].replace(';; SERVER: ', '');
+    result.datetime = data[data.length - 4].replace(';; WHEN: ', '');
+    result.size = Number(data[data.length - 3].replace(';; MSG SIZE  rcvd: ', ''));
+  } catch(e) {
+    console.error("Result error:", e);
+  }
   return result;
 }
 
